@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>双方向バインディング</h1>
+<div>ブラウザのコンソールで vm.price を変更すると即時反映が確認できる。</div>
+<hr/>
+
+<div id="example">
+  <p>{{ name }} は {{ price }}円</p>
+  <p>税込 {{ price * 1.08 }} 円</p>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script>
+  var vm = new Vue({
+    el: '#example', // document.getElementById('example'), $('#example')[0] も可
+    data: {
+      name: 'みかん',
+      price: 100
+    }
+  });
+</script>
+</body>
+</html>

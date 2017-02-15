@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>履歴 - URL Hash</h1>
+<ul>
+  <li>URLの末尾に #/ が付加される。デフォルト。</li>
+</ul>
+<hr/>
+
+
+<div id="app">
+  <router-link to="/a">/a (有効ルート)</router-link>
+  <router-link to="/b">/b (/a の alias)</router-link>
+  <router-link to="/c">/c (有効ルート)</router-link>
+  <router-link to="/d">/d (/c の alias)</router-link>
+  <router-link to="/e">/e (/c の alias)</router-link>
+  <router-view></router-view>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script src="/js/vue-router.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  var A = {
+    template: "<div>A です</div>"
+  };
+  var C = {
+    template: "<div>C です</div>"
+  };
+  var NotFound = {
+    template: "<div>404(Not Found) です</div>"
+  };
+
+  var router = new VueRouter({
+    routes: [
+      { path: '/a', component: A, alias: '/b' },
+      { path: '/c', component: C, alias: ['/d', '/e'] },
+      { path: '*', component: NotFound }
+    ]
+  });
+
+  var app = new Vue({
+    router: router
+  }).$mount("#app")
+});
+</script>
+</body>
+</html>

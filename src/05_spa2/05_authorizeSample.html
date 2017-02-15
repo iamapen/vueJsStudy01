@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>簡易認証サンプル</h1>
+<ul>
+  <li>vue@example.com / vue</li>
+</ul>
+<hr/>
+
+
+<div id="app">
+  <router-link to="/top">トップ</router-link>
+  <router-link to="/users">ユーザ一覧</router-link>
+  <router-view></router-view>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script src="/js/vue-router.js"></script>
+<script type="x-template" id="user-list">
+  <div>
+    <div class="loading" v-if="loading">ロード中...</div>
+    <div v-if="error" class="error">
+      {{ error }}
+    </div>
+    <!-- usersがロードされたら各ユーザーの名前を表示する -->
+    <div v-for="user in users" :key="user.id">
+      <h2>{{ user.name }}</h2>
+    </div>
+  </div>
+</script>
+<script type="x-template" id="login">
+  <div>
+    <h2>Login</h2>
+    <p v-if="$route.query.redirect">
+      ログインしてください
+    </p>
+    <form @submit.prevent="login">
+      <label><input v-model="email" placeholder="email"></label>
+      <label><input v-model="pass" placeholder="password" type="password"></label><br>
+      <button type="submit">ログイン</button>
+      <p v-if="error" class="error">ログインに失敗しました</p>
+    </form>
+  </div>
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function(ev) {
+  // 擬似的にAPI経由で情報を取得したようにする
+  var getUsers = function (callback) {
+    setTimeout(function () {
+      callback(null, [
+        {
+          id: '001',
+          name: 'Takuya Tejima'
+        },
+        {
+          id: '002',
+          name: 'Yohei Noda'
+        }
+      ])
+    }, 1000)
+  };
+
+  // 認証サービスMock
+  var Auth = {
+    login: function (email, pass, cb) {
+      // ダミーデータを使った擬似ログイン
+      setTimeout(function () {
+        if (email === 'vue@example.com' && pass === 'vue') {
+          // ログイン成功時はローカルストレージにtokenを保存する
+          localStorage.token = Math.random().toString(36).substring(7);
+          if (cb) { cb(true) }
+        } else {
+          if (cb) { cb(false) }
+        }
+      }, 0)
+    },
+
+    logout: function () {
+      delete localStorage.token;
+    },
+
+    loggedIn: function () {
+      // ローカルストレージにtokenがあればログイン状態とみなす
+      return !!localStorage.token;
+    }
+  };
+
+  // ログインコンポネント
+  var Login = {
+    template: '#login',
+    data: function () {
+      return {
+        email: 'vue@example.com',
+        pass: '',
+        error: false
+      }
+    },
+    methods: {
+      login: function () {
+        Auth.login(this.email, this.pass, (function (loggedIn) {
+          if (!loggedIn) {
+            this.error = true
+          } else {
+            // redirectパラメーターが付いている場合はそのパスに遷移
+            this.$router.replace(this.$route.query.redirect || '/')
+          }
+        }).bind(this))
+      }
+    }
+  };
+
+  // ユーザ一覧コンポネント
+  var UserList = {
+    // HTML上のscriptタグのidを指定する
+    template: '#user-list',
+    data: function () {
+      return {
+        loading: false,
+        // 初期値の空配列を定義
+        users: function () { return [] },
+        error: null
+      }
+    },
+    // 初期化時にデータを取得する
+    created: function () {
+      this.fetchData()
+    },
+    // ルーティングが変更された時に再度データを取得するために$routeの変更をwatchする
+    watch: {
+      '$route': 'fetchData'
+    },
+    methods: {
+      fetchData: function () {
+        this.loading = true;
+        // 取得したデータの結果をusersに格納する
+        getUsers((function (err, users) {
+          this.loading = false;
+          if (err) {
+            this.error = err.toString();
+          } else {
+            this.users = users;
+          }
+        }).bind(this))
+      }
+    }
+  };
+
+  var router = new VueRouter({
+    routes: [
+      {
+        path: '/top',
+        component: {
+          template: '<div>トップページです。</div>'
+        }
+      },
+      {
+        path: '/users',
+        component: UserList,
+        beforeEnter: function (to, from, next) {
+          // 認証されていない状態でアクセスした時はloginページに遷移する
+          if (!Auth.loggedIn()) {
+            next({
+              path: '/login',
+              query: { redirect: to.fullPath }
+            })
+          } else {
+            // 認証済みであればそのままユーザー詳細ページへ進む
+            next()
+          }
+        }
+      },
+      {
+        path: '/login',
+        component: Login
+      },
+      {
+        path: '/logout',
+        beforeEnter: function (to, from, next) {
+          Auth.logout();
+          next('/')
+        }
+      }
+    ]
+  });
+
+  var app = new Vue({
+    router: router
+  }).$mount("#app")
+});
+</script>
+</body>
+</html>

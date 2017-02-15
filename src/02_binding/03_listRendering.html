@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>リストレンダリング (v-for ディレクティブ)</h1>
+<div></div>
+<hr/>
+
+<div id="example">
+  <li v-for="item in items">
+    <p>{{ item.name }} は {{ item.price }}円</p>
+  </li>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script>
+  var vm = new Vue({
+    el: '#example', // document.getElementById('example'), $('#example')[0] も可
+    data: {
+      items: [
+        { name: 'みかん', price: 100 },
+        { name: 'もも', price: 300 },
+        { name: 'いちじく', price: 500 },
+        { name: 'メロン', price: 1000 }
+      ]
+    }
+  });
+</script>
+</body>
+</html>

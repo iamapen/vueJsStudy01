@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>リダイレクト</h1>
+<ul>
+</ul>
+<hr/>
+
+
+<div id="app">
+  <router-link to="/a">/a (/b に redirectされる)</router-link>
+  <router-link to="/b">/b (有効ルート)</router-link>
+  <router-link to="/c">/c (NotFound)</router-link>
+  <router-view></router-view>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script src="/js/vue-router.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  var B = {
+    template: "<div>B です</div>"
+  };
+  var NotFound = {
+    template: "<div>404(Not Found) です</div>"
+  };
+
+  var router = new VueRouter({
+    routes: [
+      { path: '/a', redirect: '/b' },
+      { path: '/b', component: B },
+      { path: '/notfound', component: NotFound },
+      // 現在のURLが定義したルートのいずれにもマッチしなかった時に/notfoundに遷移する
+      { path: '*', redirect: '/notfound' }
+    ]
+  });
+
+  var app = new Vue({
+    router: router
+  }).$mount("#app")
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>履歴 - HTML5 History API</h1>
+<ul>
+  <li>#/ は付与されない</li>
+  <li>ユーザの直入力や F5 を考慮すると、サーバ側でSPAの該当ページを返す必要がある。</li>
+</ul>
+<hr/>
+
+
+<div id="app">
+  <router-link to="/a">/a (有効ルート)</router-link>
+  <router-link to="/b">/b (/a の alias)</router-link>
+  <router-link to="/c">/c (有効ルート)</router-link>
+  <router-link to="/d">/d (/c の alias)</router-link>
+  <router-link to="/e">/e (/c の alias)</router-link>
+  <router-view></router-view>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script src="/js/vue-router.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  var A = {
+    template: "<div>A です</div>"
+  };
+  var C = {
+    template: "<div>C です</div>"
+  };
+  var NotFound = {
+    template: "<div>404(Not Found) です</div>"
+  };
+
+  var router = new VueRouter({
+    mode: "history",
+    routes: [
+      { path: '/a', component: A, alias: '/b' },
+      { path: '/c', component: C, alias: ['/d', '/e'] },
+      { path: '*', component: NotFound }
+    ]
+  });
+
+  var app = new Vue({
+    router: router
+  }).$mount("#app")
+});
+</script>
+</body>
+</html>

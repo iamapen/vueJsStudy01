@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>スタイルのバインディング (v-bind:style)</h1>
+<div></div>
+<hr/>
+
+
+<div id="example" v-bind:style="{'border': (isValid ? '' : '1px solid red')}">
+  <p>名前 {{ name }}</p>
+  <p v-show="!isValid">
+    名前を入力してください (vm.name)
+  </p>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script>
+  var vm = new Vue({
+    el: '#example',
+    data: {
+      name: ""
+    },
+    computed: {
+      isValid: function () {
+        return this.name.length > 0;
+      }
+    }
+  });
+</script>
+</body>
+</html>

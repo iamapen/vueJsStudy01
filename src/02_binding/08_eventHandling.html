@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+<style>
+div.error {
+  border: 1px solid red;
+}
+</style>
+</head>
+<body>
+
+<h1>DOMイベントハンドリング (v-on)</h1>
+<div>v-on:input ではなく、 v-on:change というイベントもある</div>
+<hr/>
+
+
+<div id="example" v-bind:class="{'error': !isValid}">
+  <p>名前 {{ name }}</p>
+  <p>
+    <input type="text" v-on:input="name = $event.target.value">
+  </p>
+  <p v-show="!isValid">
+    名前を入力してください
+  </p>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script>
+  var vm = new Vue({
+    el: '#example',
+    data: {
+      name: ""
+    },
+    computed: {
+      isValid: function () {
+        return this.name.length > 0;
+      }
+    }
+  });
+</script>
+</body>
+</html>

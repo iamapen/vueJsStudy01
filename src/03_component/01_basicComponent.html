@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+<style>
+div.error {
+  border: 1px solid red;
+}
+</style>
+</head>
+<body>
+
+<h1>UIのコンポネント化</h1>
+<ul>
+  <li>HTML + CSS + JS で構築されたUIの再利用性を高める</li>
+  <li>親から子へ プロパティを渡し、子から親へカスタムイベントを通知 する</li>
+  <li>$on(eventName) でlisten、$emit(eventName) で発火。</li>
+  <li>ボタン押す→addToCart()メソッド→incrementイベント発火→listenしてるので親コンポネントのincrement()メソッド実行</li>
+</ul>
+<hr/>
+
+
+<div id="fruits-counter">
+  <div v-for="fruit in fruits">
+    {{fruit.name}}: <counter-button v-on:increment="increment()"></counter-button>
+  </div>
+  <p>合計: {{total}}</p>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script>
+  /**
+   * 子コンポネント
+   *
+   * 自身の個数をプロパティに持つ。
+   * カートに追加すると incrementカスタムイベントを発火する
+   */
+  var counterButton = Vue.extend({
+    template: '<span>{{counter}}個 <button v-on:click="addToCart">追加</button></span>',
+    data: function () {
+      return {
+        counter: 0
+      }
+    },
+    methods: {
+      addToCart: function () {
+        this.counter += 1;
+        this.$emit('increment');
+      }
+    }
+  });
+
+  /**
+   * 親コンポネント
+   * 合計数をプロパティに持つ
+   */
+  new Vue({
+    el: "#fruits-counter",
+    components: {
+      'counter-button': counterButton
+    },
+    data: {
+      total: 0,
+      fruits: [
+        {name: "梨"},
+        {name: "イチゴ"},
+        {name: "バナナ"}
+      ]
+    },
+    methods: {
+      increment: function () {
+        this.total += 1
+      }
+    }
+  });
+</script>
+</body>
+</html>

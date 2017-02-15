@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>算出プロパティ</h1>
+<div>getter 的なもの</div>
+<hr/>
+
+<div id="example">
+  <p>{{ name }} は {{ price }}円</p>
+  <p>税込 {{ priceWithTax }} 円</p>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script>
+  var vm = new Vue({
+    el: '#example', // document.getElementById('example'), $('#example')[0] も可
+    data: {
+      name: 'みかん',
+      price: 100
+    },
+    computed: {
+      priceWithTax: function(){
+        return this.price * 1.08;
+      }
+    }
+  });
+</script>
+</body>
+</html>

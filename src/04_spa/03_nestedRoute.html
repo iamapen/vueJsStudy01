@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+
+<h1>ネストされたルート</h1>
+<ul>
+  <li>複雑なルートを階層分けして管理できる</li>
+</ul>
+<hr/>
+
+
+<div id="app">
+  <!-- リンク先を `to` プロパティに指定します -->
+  <!-- デフォルトで <router-link> は `<a>` タグとしてレンダリングされます -->
+  <router-link to="/top">トップ</router-link>
+  <router-link to="/users">ユーザ一覧</router-link>
+  <router-link :to="{name:'user', params:{userId:123}}">ユーザ123 (名前付きルート)</router-link>
+  <!-- 現在のURLとマッチしたルートに定義されたコンポーネントがここにレンダリングされます -->
+  <router-view></router-view>
+</div>
+
+
+<script src="/js/vue.js"></script>
+<script src="/js/vue-router.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  // ユーザー詳細ページのコンポーネント定義
+  var User = {
+    template:
+    '<div class="user">' +
+    '<h2>ユーザーIDは {{ $route.params.userId }} です。</h2>' +
+    '<router-link :to="\'/user/\' + $route.params.userId + \'/profile\'">プロフィール</router-link>' +
+    '<router-link :to="\'/user/\' + $route.params.userId + \'/posts\'">投稿リスト</router-link>' +
+    '<router-view></router-view>' +
+    '</div>'
+  };
+
+// ユーザー詳細ページ内で部分的に表示されるユーザーのプロフィールページ
+  var UserProfile = {
+    template:
+    '<div class="user-profile">' +
+    '<h3>こちらはユーザー {{ $route.params.userId }} のプロフィールページです。</h3>' +
+    '</div>'
+  };
+
+// ユーザー詳細ページ内で部分的に表示されるユーザーの投稿ページ
+  var UserPosts = {
+    template:
+    '<div class="user-posts">' +
+    '<h3>こちらはユーザー {{ $route.params.userId }} の投稿ページです。</h3>' +
+    '</div>'
+  };
+
+  var router = new VueRouter({
+    routes: [
+      {
+        path: '/user/:userId',
+        name: 'user',
+        component: User,
+        children: [
+          {
+            // /user/:userId/profile がマッチした時に
+            // UserProfileコンポーネントはUserコンポーネントの <router-view> 内部でレンダリングされます
+            path: 'profile',
+            component: UserProfile
+          },
+          {
+            // /user/:userId/posts がマッチした時に
+            // UserPostsコンポーネントはUserコンポーネントの <router-view> 内部でレンダリングされます
+            path: 'posts',
+            component: UserPosts
+          }
+        ]
+      }
+    ]
+  });
+
+  var app = new Vue({
+    router: router
+  }).$mount("#app")
+});
+</script>
+</body>
+</html>
